@@ -13,25 +13,39 @@ public class Application {
 	 */
 	public static void main(String[] args) {
 
+		/*
 		System.out.println("Hello xxx");
 		GMOL_Image img = new GMOL_Image(new Date(2012-1900,04,06,15,45));
 		//Calendar.set(2012+1900,04,06,15,45) --> BULLSHIT (Date works great)
 		
-		GMOL_Image img2 = new GMOL_Image(new Date(2012-1900,04,06,15,47), new Point(150,249));
+		GMOL_Image img2 = new GMOL_Image(new Date(2012-1900,04,06,16,10), new Point(150,249));
+		GMOL_Image img3 = new GMOL_Image(new Date(2012-1900,04,06,23,20), new Point(150,249));
+*/
 		
-		TreeMap<Integer,GMOL_Image> map = new TreeMap<Integer,GMOL_Image>();
-		map.put(img.getID(), img);
-		map.put(img2.getID(), img2);
+		GMOL_Image[] images = TestParser.GMOL_ImageFromFile( "res/test.txt" );
 		
-		System.out.println(map.get(img.getID()));
-		System.out.println(map.get(img2.getID()));
-
-		List<TreeSet<GMOL_Image>> set ;//= DBSCAN;
+		if ( images != null ) {
+			
+			for (int i=0; i<images.length; i++) {
+				System.out.println(images[i]);
+			}
+			
+		}
 		
-		
-		DataSet ds = DataSet.ImagesToDataSet( new GMOL_Image[] { img, img2 }, DataSet.DS_TIME );
+		DataSet ds = DataSet.ImagesToDataSet( images, DataSet.DS_TIME );
 		System.out.println("Count : "+ds.count());
 		
+		CL_DBSCAN dbs = new CL_DBSCAN( ds );
+		dbs.runAlgo();
+				
+		System.out.println("Done");
+		
+		System.out.println(ds.get(0).getClusterID());
+		System.out.println(ds.get(1).getClusterID());
+		System.out.println(ds.get(2).getClusterID());
+		System.out.println(ds.get(3).getClusterID());
+		System.out.println(ds.get(4).getClusterID());
+
 	}
 
 }

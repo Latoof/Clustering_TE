@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 
 public class CL_DBSCAN extends CL_algo {
 
-	private static float default_epsilon;
-	private static int default_minNbPoints = 2;
+	private static float default_epsilon = 30; /* Mins */
+	private static int default_minNbPoints = 1;
 	
 	private float epsilon;
 	private int minNbPoints;
@@ -31,6 +31,8 @@ public class CL_DBSCAN extends CL_algo {
 
 	public void runAlgo() {
 		
+		this.data.reset_tmp();
+		
 		int current_cluster = 0;
 		Iterator<Entry<Integer, DataElement>> it = this.data.iterator();
 		
@@ -43,17 +45,49 @@ public class CL_DBSCAN extends CL_algo {
 				expandCluster( e.getKey(), current_cluster );
 				current_cluster++;
 			}
-			
-			
+				
 		}
-		
 		
 	}
 	
     private boolean expandCluster( int idElement, int currentClusterId ) {
 
+        LinkedList<Integer> seeds = (LinkedList<Integer>) this.getNeighbours( idElement );
+        if ( seeds.size() < this.minNbPoints ){ //no core point
+        	this.data.get(idElement).setClusterID(DataElement.NOISE);
+            return false;
+        }
+        else {
+	        for (Integer i : seeds) {
+	        	this.data.get(i).setClusterID(currentClusterId);
+	        }
+	        seeds.remove((Integer)idElement);
+	        while (!seeds.isEmpty()) {
+	            int currentPoint = seeds.getFirst();
+	            Collection<Integer> result = this.getNeighbours( currentPoint );
+	    
+	            if (result.size() >= this.minNbPoints){
+                    for (Integer resultPId : result) {
+                    	
+                        DataElement resultP = this.data.get(resultPId);
+                        
+                        if (resultP.getClusterID() == DataElement.UNCLASSIFIED) {
+	                        seeds.addLast(resultPId);
+	                        resultP.setClusterID(currentClusterId);
+                        }
+                        
+                        if (resultP.getClusterID() == DataElement.NOISE) {
+                            resultP.setClusterID(currentClusterId);
+                        }
+                        
+                    }
+	            }
+	            
+	            seeds.remove((Integer)currentPoint);
+	        }
+	        return true;
+        }
     	
-    	return true;
     }
     
     /** Inspired from Markus
@@ -71,10 +105,12 @@ public class CL_DBSCAN extends CL_algo {
 	    List<Integer> result = new LinkedList<Integer>();
 	    
 	    // Because the api returns strictly smaller we add  a small value. 
-	    Collection<Integer> closepoints = neigbourList.headMap( (double)this.epsilon +0.0000000000000001f).values();
+	    Collection<Integer> closepoints = neigbourList.headMap( (double)this.epsilon + 0.0000000000000001f).values();
 	    for (Integer col : closepoints) {
 	    	result.add(col);
 	    }
+	    System.out.println("Neigbours of "+idElement+" :");
+	    System.out.println(result+"\n");
 	    
 	    return result;                                                                                                    
             

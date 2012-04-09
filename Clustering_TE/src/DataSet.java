@@ -22,7 +22,7 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 	/* To make settable */
 	private DistanceCalculator distance_calculator;
 	
-	private double[][] distance_matrix;
+	//private double[][] distance_matrix;
 	private TreeMap<Integer,SortedMap<Double,Integer>> distance_map;
 	
 	public DataSet( int d ) {
@@ -43,6 +43,13 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 		
 	}
 	
+	public void reset_tmp() {
+		this.distance_map = null;
+		for ( Iterator<Entry<Integer, DataElement>> iterD = this.iterator(); iterD.hasNext(); ) {
+			iterD.next().getValue().setClusterID( DataElement.UNCLASSIFIED );
+		}
+	}
+	
 	public void add( int id, DataElement e ) {
 		
 		if ( e.getDimension() > this.dimension ) {
@@ -52,6 +59,10 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 			data.put( id, e );
 		}
 		
+	}
+	
+	public DataElement get( int id) {
+		return this.data.get( id );
 	}
 
 	public Iterator<Entry<Integer,DataElement>> iterator() {
@@ -87,7 +98,7 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 			double tab[] = new double[dim];
 			
 			if ( mode == DS_TIME ) {
-				tab[offset++] = (double) imgs[i].getDate().getTime() / 1000;
+				tab[offset++] = (double) imgs[i].getDate().getTime() / 60000;
 			}
 			if ( mode == DS_LOC ) {
 				tab[offset++] = (double)imgs[i].getLocation().getX();
@@ -156,44 +167,34 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 	
     private void createSortedDistanceList() {
         double dist;
-        if (this.distance_matrix == null) {
-                this.createDistanceMap();
+        if (this.distance_map == null) {
+               this.createDistanceMap();
         }
     }
-    
-    /**
-     * This method is used to normalize querys on the distance Matirx. That Way only
-     * the upper half of the matrix has to be stored since we expect the
-     * distance measurement to be symetrical.
-     * @param pointId1 index of one of the points that we are interested in in the dataset
-     * @param pointId2 index of the other of the points that we are interested in in the dataset
-     * @return distance between the two points
-     */
-    private double getDistance (int pointId1, int pointId2){
-            if (pointId1 < pointId2){
-                    return this.distance_matrix[pointId1][pointId2];
-            } else {
-                    return this.distance_matrix[pointId2][pointId1];
-            }
-    }
+
     
     /* Pour chaque donne, on calcule les distances par rapport aux autres */
     private void createDistanceMap() {
     	
+    	this.distance_map = new TreeMap<Integer, SortedMap<Double,Integer>>();
+    	
         double distance;
-        this.distance_matrix = new double[this.count()][this.count()];
         Iterator<Entry<Integer, DataElement>> itFrom = this.iterator();
         
         while ( itFrom.hasNext() ) {
         	
+        	Entry<Integer, DataElement> eFrom = itFrom.next();
+
+        	this.distance_map.put( eFrom.getKey() , new TreeMap<Double, Integer>() );
+        	
         	Iterator<Entry<Integer, DataElement>> itTo = this.iterator();
             while ( itTo.hasNext() ) {
 
-            	Entry<Integer, DataElement> eFrom = itFrom.next();
             	Entry<Integer, DataElement> eTo = itTo.next();
             	
                 distance = this.distance_calculator.calculateDistance( eFrom.getValue(), eTo.getValue() );
                 this.distance_map.get( eFrom.getKey() ).put( distance, eTo.getKey() );
+                //this.distance_map.putAll( new SortedMap<Double,Integer>() );
             }
         }
 

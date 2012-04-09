@@ -65,6 +65,19 @@ public class GMOL_Image {
 		return this.id;
 	}
 	
+		
+	public void setLocation(Point location) {
+		this.location = location;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public void setKeywords(TreeSet<String> keywords) {
+		this.keywords = keywords;
+	}
+
 	public TreeSet<String> getKeywords() {
 		return this.keywords;
 	}
