@@ -70,7 +70,9 @@ public class GMOL_Image {
 	}
 	
 	public String toString() {
-		return this.id+" :\n"+this.date+"\n"+this.location+"\n"+this.keywords;
+		return this.id+" :\n"+this.date+" ("+this.date.getTime()+")\n"+this.location+"\n"+this.keywords;
 	}
+	
+
 	
 }
