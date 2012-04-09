@@ -19,8 +19,8 @@ public abstract class CL_algo<T> {
 	}
 	*/
 	
-	private DataSet data;
-	private List<TreeSet<T>> clusters;
+	protected DataSet data;
+	protected List<TreeSet<T>> clusters;
 
 	public CL_algo( DataSet d ) {
 		this.data = d;
