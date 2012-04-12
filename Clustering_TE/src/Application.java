@@ -1,10 +1,8 @@
-import java.awt.Point;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import Algorithms.CL_DBSCAN;
+import DataModel.DataSet;
+import GMOL.GMOL_Image;
+import GMOL.TestParser;
 
 public class Application {
 
@@ -13,15 +11,6 @@ public class Application {
 	 */
 	public static void main(String[] args) {
 
-		/*
-		System.out.println("Hello xxx");
-		GMOL_Image img = new GMOL_Image(new Date(2012-1900,04,06,15,45));
-		//Calendar.set(2012+1900,04,06,15,45) --> BULLSHIT (Date works great)
-		
-		GMOL_Image img2 = new GMOL_Image(new Date(2012-1900,04,06,16,10), new Point(150,249));
-		GMOL_Image img3 = new GMOL_Image(new Date(2012-1900,04,06,23,20), new Point(150,249));
-*/
-		
 		GMOL_Image[] images = TestParser.GMOL_ImageFromFile( "res/test.txt" );
 		
 		if ( images != null ) {
@@ -32,20 +21,33 @@ public class Application {
 			
 		}
 		
-		DataSet ds = DataSet.ImagesToDataSet( images, DataSet.DS_TIME );
-		System.out.println("Count : "+ds.count());
+		DataSet dsTime = DataSet.ImagesToDataSet( images, DataSet.DS_TIME );
+		System.out.println("Count : "+dsTime.count());
 		
-		CL_DBSCAN dbs = new CL_DBSCAN( ds );
+		CL_DBSCAN<Integer> dbs = new CL_DBSCAN<Integer>( dsTime );
 		dbs.runAlgo();
 				
 		System.out.println("Done");
 		
-		System.out.println(ds.get(0).getClusterID());
-		System.out.println(ds.get(1).getClusterID());
-		System.out.println(ds.get(2).getClusterID());
-		System.out.println(ds.get(3).getClusterID());
-		System.out.println(ds.get(4).getClusterID());
+		System.out.println(dsTime.get(0).getClusterID());
+		System.out.println(dsTime.get(1).getClusterID());
+		System.out.println(dsTime.get(2).getClusterID());
+		System.out.println(dsTime.get(3).getClusterID());
+		System.out.println(dsTime.get(4).getClusterID());
 
+		DataSet dsLoc = DataSet.ImagesToDataSet( images, DataSet.DS_LOC );
+		System.out.println("Count : "+dsLoc.count());
+		
+		CL_DBSCAN<Integer> dbs2 = new CL_DBSCAN<Integer>( dsLoc );
+		dbs2.runAlgo();
+				
+		System.out.println("Done");
+		
+		System.out.println(dsLoc.get(0).getClusterID());
+		System.out.println(dsLoc.get(1).getClusterID());
+		System.out.println(dsLoc.get(2).getClusterID());
+		System.out.println(dsLoc.get(3).getClusterID());
+		System.out.println(dsLoc.get(4).getClusterID());
 	}
 
 }

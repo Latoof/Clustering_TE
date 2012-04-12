@@ -1,9 +1,16 @@
+package GMOL;
 import java.awt.Point;
 import java.util.Date;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
-
+/***
+ * 
+ * @author latoof
+ * Structure de donnees pour tester les differents algos sur des objets
+ * possedant les memes proprietes que les Images (Date, localisation, tags)
+ * Cette structure permet de simuler une "vraie image".
+ *
+ */
 public class GMOL_Image {
 
 	public static int counter;

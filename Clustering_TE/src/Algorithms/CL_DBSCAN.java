@@ -1,13 +1,27 @@
+package Algorithms;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import DataModel.DataElement;
+import DataModel.DataSet;
 
-public class CL_DBSCAN extends CL_algo {
+/***
+ * 
+ * @author latoof
+ * 
+ * Algorithme DBSCAN : Effectue le Clustering par densite, en utilisant :
+ * @param epsilon Definit la distance minimale entre 2 pts d'un meme cluster
+ * @param minNbPoints Parametre de densite minimale --> Nombre de points minimum pour que n points forment un cluster.
+ *
+ * Avantages : Peu sensible au bruit (on peut mettre "minNbPoints" a 1). Constants dans les partitionnements.
+ * Inconvenients : Les parametres epsilon et minNbPoints doivent etres renseignes. Necessite parfois plusieures passes.
+ */
+public class CL_DBSCAN<T> extends CL_algo<T> {
+
 
 	private static float default_epsilon = 30; /* Mins */
 	private static int default_minNbPoints = 1;

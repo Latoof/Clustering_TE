@@ -1,3 +1,4 @@
+package GMOL;
 import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +9,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+/***
+ * 
+ * @author latoof
+ * N'est utile que pour nous-même : Cette classe permet de charge un jeu de
+ * "photos" virtuelles (GMOL_Image) à partir d'un fichier texte.
+ * L'algorithme parsera chaque ligne de la forme :
+ * <date> # <locationX>,<locationY> # <tag1>,<tag2>,...,<tagn>
+ *
+ */
 public class TestParser {
 
 	public static GMOL_Image parseLine( String line ) {

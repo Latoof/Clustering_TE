@@ -1,7 +1,15 @@
+package DataModel;
 
-/* Element de donnees abstraites. Permet de mettre facilement des drapeaux.
- * (visited, noise, etc)
- *  */
+/***
+ * 
+ * @author latoof
+ * Element de donnees abstraites. Avant l'execution de chaque algorithme, on va transformer
+ * les donnees concretes (GMOL_Image) en donnees plus generiques.
+ * Ce type d'objet peut se résumer comme etant un tableau a n dimensions.
+ * 
+ * Il permet de mettre facilement des drapeaux (visited, noise, etc) lors de l'execution des algorithmes
+ *
+ */
 public class DataElement {
 
 	private double[] data;

@@ -1,12 +1,22 @@
-import java.util.ArrayList;
+package DataModel;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Vector;
 
+import Algorithms.DistanceCalculator;
+import Algorithms.EuclideanDistanceCalculator;
+import GMOL.GMOL_Image;
 
+/***
+ * 
+ * @author latoof
+ * Regroupe les DataElement (elements a etudier) du systeme.
+ * Inclut une methode statique ImagesToDataSet qui permet de convertir automatiquement
+ * un jeu de GMOL_Image en un DataSet (jeu de DataElement), en prenant une ou plusieures 
+ * dimensions parmis la Date, le Lieu et les Tags.
+ * 
+ */
 public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 
 	
@@ -165,14 +175,7 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 		
 	}
 	
-    private void createSortedDistanceList() {
-        double dist;
-        if (this.distance_map == null) {
-               this.createDistanceMap();
-        }
-    }
 
-    
     /* Pour chaque donne, on calcule les distances par rapport aux autres */
     private void createDistanceMap() {
     	

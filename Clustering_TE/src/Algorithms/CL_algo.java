@@ -1,24 +1,23 @@
-import java.util.Collection;
-import java.util.LinkedList;
+package Algorithms;
 import java.util.List;
 import java.util.TreeSet;
 
-/* T --> Elements de sorties (on aura des clusters de T) 
- * On va fait au plus simple la plupart du temps et faire T->Integer (ID des images)
- * */
+import DataModel.DataSet;
+
+/***
+ * 
+ * @author latoof
+ * 
+ * Classe generique pour les algorithmes de clustering. Nous definissons un CL_algo
+ * comme un moyen de convertir un DataSet en un ensemble de Clusters contenant les memes
+ * donnees, mais de maniere classee.
+ * 
+ * @param <T> Elements de sorties (on aura des clusters de T) 
+ * (La plupart du temps, on aura T == Integer, pour + de clarte)
+ * 
+ */
 public abstract class CL_algo<T> {
 
-	/*
-	private Collection<T> input;
-	
-	public CL_algo( Collection<T> i ) {
-		
-		this.input = i;
-		this.clusters = new LinkedList<TreeSet<T>>();
-		
-	}
-	*/
-	
 	protected DataSet data;
 	protected List<TreeSet<T>> clusters;
 

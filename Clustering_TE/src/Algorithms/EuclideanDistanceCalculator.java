@@ -1,3 +1,6 @@
+package Algorithms;
+import DataModel.DataElement;
+
 
 public class EuclideanDistanceCalculator implements DistanceCalculator {
 
