@@ -49,4 +49,16 @@ public class DataElement {
 		}
 	}
 	
+	public String toString() {
+		String str = "[";
+		
+		for ( int i=0; i<this.dimension; i++ ) {
+			str += this.data[i] + ",";
+		}
+		
+		str += "]";
+		
+		return str;
+	}
+	
 }

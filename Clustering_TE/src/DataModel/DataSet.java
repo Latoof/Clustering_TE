@@ -87,15 +87,15 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 	/* Specifique a notre cas. Pour facilier la conversion Images <-> Donnees Brut */
 	/* C'est egalement ici qu'on pourra jouer sur le poids de chaque parametre (pour laisser les algos generiques) */
 	public static DataSet ImagesToDataSet( GMOL_Image[] imgs, int mode ) {
-		
+
 		int dim = 0;
-		if ( mode == DS_TIME ) {
+		if ( (mode & DS_TIME) == DS_TIME ) {
 			dim++;
 		}
-		if ( mode == DS_LOC ) {
+		if ( (mode & DS_LOC) == DS_LOC ) {
 			dim+=2;
 		}
-		if ( mode == DS_KEYWORDS ) {
+		if ( (mode & DS_KEYWORDS) == mode ) {
 			dim++;
 		}
 		
@@ -107,10 +107,10 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 			
 			double tab[] = new double[dim];
 			
-			if ( mode == DS_TIME ) {
+			if ( (mode & DS_TIME) == DS_TIME ) {
 				tab[offset++] = (double) imgs[i].getDate().getTime() / 60000;
 			}
-			if ( mode == DS_LOC ) {
+			if ( (mode & DS_LOC) == DS_LOC  ) {
 				tab[offset++] = (double)imgs[i].getLocation().getX();
 				tab[offset++] = (double)imgs[i].getLocation().getY();
 
@@ -201,6 +201,18 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
             }
         }
 
+    }
+    
+    public String toString() {
+    	
+    	String str = "";
+    	
+    	Iterator iterData = data.values().iterator();
+    	while ( iterData.hasNext() ) {
+    		str += iterData.next() + "\n";
+    	}
+    	
+    	return str;
     }
 	
 }

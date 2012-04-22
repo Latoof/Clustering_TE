@@ -123,8 +123,6 @@ public class CL_DBSCAN<T> extends CL_algo<T> {
 	    for (Integer col : closepoints) {
 	    	result.add(col);
 	    }
-	    System.out.println("Neigbours of "+idElement+" :");
-	    System.out.println(result+"\n");
 	    
 	    return result;                                                                                                    
             
