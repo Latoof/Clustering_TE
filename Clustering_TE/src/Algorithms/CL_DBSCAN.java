@@ -61,7 +61,7 @@ public class CL_DBSCAN<T> extends CL_algo<T> {
 			}
 				
 		}
-		
+				
 	}
 	
     private boolean expandCluster( int idElement, int currentClusterId ) {
@@ -74,6 +74,7 @@ public class CL_DBSCAN<T> extends CL_algo<T> {
         else {
 	        for (Integer i : seeds) {
 	        	this.data.get(i).setClusterID(currentClusterId);
+	        	this.addElementToCluster( currentClusterId, this.data.get(i) );
 	        }
 	        seeds.remove((Integer)idElement);
 	        while (!seeds.isEmpty()) {
@@ -88,10 +89,18 @@ public class CL_DBSCAN<T> extends CL_algo<T> {
                         if (resultP.getClusterID() == DataElement.UNCLASSIFIED) {
 	                        seeds.addLast(resultPId);
 	                        resultP.setClusterID(currentClusterId);
+	                        
+	                        // T
+	        	        	this.addElementToCluster( currentClusterId, (resultP) );
+
                         }
                         
                         if (resultP.getClusterID() == DataElement.NOISE) {
                             resultP.setClusterID(currentClusterId);
+                            
+                            // T
+            	        	this.addElementToCluster( currentClusterId, (resultP) );
+
                         }
                         
                     }

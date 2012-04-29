@@ -53,6 +53,11 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 		
 	}
 	
+	public DataSet( int d, TreeMap<Integer, DataElement> set ) {
+		this.dimension = d;
+		this.data = set;
+	}
+	
 	public void reset_tmp() {
 		this.distance_map = null;
 		for ( Iterator<Entry<Integer, DataElement>> iterD = this.iterator(); iterD.hasNext(); ) {
@@ -111,8 +116,8 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 				tab[offset++] = (double) imgs[i].getDate().getTime() / 60000;
 			}
 			if ( (mode & DS_LOC) == DS_LOC  ) {
-				tab[offset++] = (double)imgs[i].getLocation().getX();
-				tab[offset++] = (double)imgs[i].getLocation().getY();
+				tab[offset++] = (double)imgs[i].getLocation().getX()*1.3;
+				tab[offset++] = (double)imgs[i].getLocation().getY()*1.3;
 
 			}
 			if ( mode == DS_KEYWORDS ) {
@@ -207,12 +212,20 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
     	
     	String str = "";
     	
-    	Iterator iterData = data.values().iterator();
+    	Iterator<DataElement> iterData = data.values().iterator();
     	while ( iterData.hasNext() ) {
     		str += iterData.next() + "\n";
     	}
     	
     	return str;
+    }
+    
+    public void print_cluster_ids() {
+    	
+    	Iterator<DataElement> iterData = data.values().iterator();
+    	while ( iterData.hasNext() ) {
+    		System.out.println( iterData.next().getClusterID() );
+    	}    	
     }
 	
 }

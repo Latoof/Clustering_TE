@@ -1,5 +1,8 @@
 
+import java.util.Iterator;
+
 import Algorithms.CL_DBSCAN;
+import DataModel.ClusterElement;
 import DataModel.DataSet;
 import GMOL.GMOL_Image;
 import GMOL.TestParser;
@@ -30,12 +33,17 @@ public class Application {
 				
 		System.out.println("Done");
 		
-		System.out.println(dsTime.get(0).getClusterID());
-		System.out.println(dsTime.get(1).getClusterID());
-		System.out.println(dsTime.get(2).getClusterID());
-		System.out.println(dsTime.get(3).getClusterID());
-		System.out.println(dsTime.get(4).getClusterID());
-
+		dsTime.print_cluster_ids();
+		
+		System.out.println( dbs.getClusters() );
+		Iterator<ClusterElement> iterClusters = dbs.getClusters().values().iterator();
+		while ( iterClusters.hasNext() ) {
+			ClusterElement c = iterClusters.next();
+			c.computeMean();
+			System.out.println( c );
+		}
+		
+		/*
 		DataSet dsLoc = DataSet.ImagesToDataSet( images, DataSet.DS_LOC );
 		System.out.println("Count : "+dsLoc.count());
 		System.out.println(dsLoc);
@@ -45,11 +53,8 @@ public class Application {
 				
 		System.out.println("Done");
 		
-		System.out.println(dsLoc.get(0).getClusterID());
-		System.out.println(dsLoc.get(1).getClusterID());
-		System.out.println(dsLoc.get(2).getClusterID());
-		System.out.println(dsLoc.get(3).getClusterID());
-		System.out.println(dsLoc.get(4).getClusterID());
+		dsLoc.print_cluster_ids();
+
 		
 		
 		DataSet dsTimeLoc = DataSet.ImagesToDataSet( images, (DataSet.DS_LOC | DataSet.DS_TIME) );
@@ -61,11 +66,9 @@ public class Application {
 				
 		System.out.println("Done");
 		
-		System.out.println(dsTimeLoc.get(0).getClusterID());
-		System.out.println(dsTimeLoc.get(1).getClusterID());
-		System.out.println(dsTimeLoc.get(2).getClusterID());
-		System.out.println(dsTimeLoc.get(3).getClusterID());
-		System.out.println(dsTimeLoc.get(4).getClusterID());
+		dsTimeLoc.print_cluster_ids();
+		*/
+
 	}
 
 }

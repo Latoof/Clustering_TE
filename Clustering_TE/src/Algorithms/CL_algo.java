@@ -1,7 +1,10 @@
 package Algorithms;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
+import DataModel.ClusterElement;
+import DataModel.DataElement;
 import DataModel.DataSet;
 
 /***
@@ -19,16 +22,35 @@ import DataModel.DataSet;
 public abstract class CL_algo<T> {
 
 	protected DataSet data;
-	protected List<TreeSet<T>> clusters;
+	protected TreeMap<Integer,ClusterElement> clusters;
 
 	public CL_algo( DataSet d ) {
 		this.data = d;
+		this.clusters = new TreeMap<Integer,ClusterElement>();
 	}
 	
 	public abstract void runAlgo();
 	
-	List<TreeSet<T>> getClusters() {
+	public TreeMap<Integer,ClusterElement> getClusters() {
 		return this.clusters;
+	}
+	
+	
+	public void addElementToCluster( int cluster_id, DataElement e ) {
+		
+		// Lazy
+		this.newCluster(cluster_id, e.getDimension());
+		
+		this.clusters.get(cluster_id).addElement(e);
+		
+	}
+	
+	public void newCluster( int cluster_id, int dimension ) {
+		
+		if ( this.clusters.get(cluster_id) == null ) {
+			this.clusters.put( cluster_id, new ClusterElement(dimension) );
+		}
+		
 	}
 	
     public static double EuclidianDistance (double[] vect1, double[] vect2) {

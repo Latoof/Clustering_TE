@@ -1,5 +1,7 @@
 package DataModel;
 
+import java.util.LinkedList;
+
 /***
  * 
  * @author latoof
@@ -11,12 +13,12 @@ package DataModel;
  *
  */
 public class DataElement {
-
-	private double[] data;
-	private int dimension;
+	
+	protected double[] data;
+	protected int dimension;
 	
 	/* Assigned during algos */
-	private int clusterID;
+	protected int clusterID;
 	
 	public static int NOISE = -2;
 	public static int UNCLASSIFIED = -1;
