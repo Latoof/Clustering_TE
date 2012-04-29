@@ -14,6 +14,9 @@ import java.util.LinkedList;
  */
 public class DataElement {
 	
+	public static int elt_counter;
+
+	protected int id;
 	protected double[] data;
 	protected int dimension;
 	
@@ -26,6 +29,11 @@ public class DataElement {
 	public DataElement( double[] d ) {
 		this.data = d;
 		this.dimension = d.length;
+		this.id = elt_counter++;
+	}
+	
+	public int getID() {
+		return this.id;
 	}
 	
 	public int getDimension() {

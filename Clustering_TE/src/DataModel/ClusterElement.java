@@ -21,7 +21,7 @@ public class ClusterElement extends DataElement {
 		return this.sons;
 	}
 	
-	public void computeMean() {
+	public void computeMeans() {
 		
 		for ( int i=0; i<this.dimension; i++ ) {
 			
@@ -49,7 +49,7 @@ public class ClusterElement extends DataElement {
 	}
 	
 	public String toString() {
-		String str = "[Dim:" + this.dimension + "] - Mean : ";
+		String str = "[Dim:" + this.dimension + "] - Means : ";
 		
 		for ( int i=0; i<this.dimension; i++ ) {
 			str += this.data[i] + ",";

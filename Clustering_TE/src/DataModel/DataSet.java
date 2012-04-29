@@ -1,4 +1,5 @@
 package DataModel;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -65,13 +66,13 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 		}
 	}
 	
-	public void add( int id, DataElement e ) {
+	public void add( DataElement e ) {
 		
 		if ( e.getDimension() > this.dimension ) {
 			throw new NumberFormatException();
 		}
 		else {
-			data.put( id, e );
+			data.put( e.getID(), e );
 		}
 		
 	}
@@ -124,13 +125,42 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 				
 			}
 			
-			ds.add(imgs[i].getID(), new DataElement( tab ) );
+			ds.add( new DataElement( tab ) );
 			
 			
 		}
 		
 		return ds;
 		
+	}
+	
+	public static DataSet ClustersToDataSet( Collection<ClusterElement> clusters, int mode ) {
+		
+		int min_dimension = 99;
+		
+		Iterator<ClusterElement> iterClusters = clusters.iterator();
+		while ( iterClusters.hasNext() ) {
+			
+			ClusterElement c = iterClusters.next();
+			if ( c.getDimension() < min_dimension ) {
+				min_dimension = c.getDimension();
+			}
+			
+			c.computeMeans();
+			
+		}
+		
+		DataSet ds = new DataSet(min_dimension);
+		
+		iterClusters = clusters.iterator();
+		while ( iterClusters.hasNext() ) {
+			
+			ClusterElement c = iterClusters.next();
+			ds.add( c );
+			
+		}
+		
+		return ds;
 	}
 	
     /**
@@ -227,5 +257,7 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
     		System.out.println( iterData.next().getClusterID() );
     	}    	
     }
+
+
 	
 }

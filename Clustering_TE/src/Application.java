@@ -24,7 +24,7 @@ public class Application {
 			
 		}
 		
-		DataSet dsTime = DataSet.ImagesToDataSet( images, DataSet.DS_TIME );
+		DataSet dsTime = DataSet.ImagesToDataSet( images,  (DataSet.DS_LOC | DataSet.DS_TIME) );
 		System.out.println("Count : "+dsTime.count());
 		System.out.println(dsTime);
 		
@@ -39,9 +39,15 @@ public class Application {
 		Iterator<ClusterElement> iterClusters = dbs.getClusters().values().iterator();
 		while ( iterClusters.hasNext() ) {
 			ClusterElement c = iterClusters.next();
-			c.computeMean();
+			c.computeMeans();
 			System.out.println( c );
 		}
+		
+		DataSet dsSecondPass = DataSet.ClustersToDataSet( dbs.getClusters().values(), DataSet.DS_LOC );
+		CL_DBSCAN<Integer> dbst = new CL_DBSCAN<Integer>( dsSecondPass );
+		dbst.runAlgo();
+		
+		dsSecondPass.print_cluster_ids();
 		
 		/*
 		DataSet dsLoc = DataSet.ImagesToDataSet( images, DataSet.DS_LOC );
