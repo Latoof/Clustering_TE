@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.Map.Entry;
 
+import DataModel.ClusterElement;
 import DataModel.DataElement;
 import DataModel.DataSet;
 
@@ -22,18 +23,31 @@ import DataModel.DataSet;
  */
 public class CL_DBSCAN<T> extends CL_algo<T> {
 
+	private final ClusterElement noise_cluster = new ClusterElement(0);
 
-	private static float default_epsilon = 30; /* Mins */
+	private static float default_epsilon = 60; /* Mins */
 	private static int default_minNbPoints = 1;
 	
 	private float epsilon;
 	private int minNbPoints;
+	
+	private int mode;
 
 	public CL_DBSCAN(DataSet d) {
 		super(d);
 		
 		this.epsilon = default_epsilon;
 		this.minNbPoints = default_minNbPoints;
+		this.mode = DataSet.DS_TIME;
+
+	}
+	
+	public CL_DBSCAN(DataSet d, int mode ) {
+		super(d,mode);
+		
+		this.epsilon = default_epsilon;
+		this.minNbPoints = default_minNbPoints;
+		this.mode = mode;
 	}
 	
 	public CL_DBSCAN(DataSet d, float e, int nbPts ) {
@@ -41,72 +55,76 @@ public class CL_DBSCAN<T> extends CL_algo<T> {
 		
 		this.epsilon = e;
 		this.minNbPoints = nbPts;
+		this.mode = DataSet.DS_TIME;
 	}
 
 	public void runAlgo() {
 		
 		this.data.reset_tmp();
 		
-		int current_cluster = 0;
-		Iterator<Entry<Integer, DataElement>> it = this.data.iterator();
-		
+		//int current_cluster = 0;
+		Iterator<DataElement> it = this.data.iterator();
+		ClusterElement current_cluster = new ClusterElement( this.data.getDimension() );
+
 		while ( it.hasNext() ) {
 			
-			Entry<Integer, DataElement> e = it.next();
-			
-			if ( e.getValue().getClusterID() == DataElement.UNCLASSIFIED ) {
+			DataElement e = it.next();
+
+			if ( e.getCluster() == null ) {
 				
-				expandCluster( e.getKey(), current_cluster );
-				current_cluster++;
+				expandCluster( e, current_cluster );
+				//current_cluster++;
+				 current_cluster = new ClusterElement( this.data.getDimension() );
 			}
 				
 		}
 				
 	}
 	
-    private boolean expandCluster( int idElement, int currentClusterId ) {
+    private boolean expandCluster( DataElement e, ClusterElement currentCluster ) {
 
-        LinkedList<Integer> seeds = (LinkedList<Integer>) this.getNeighbours( idElement );
+        LinkedList<DataElement> seeds = (LinkedList<DataElement>) this.getNeighbours( e );
         if ( seeds.size() < this.minNbPoints ){ //no core point
-        	this.data.get(idElement).setClusterID(DataElement.NOISE);
+        	e.setClusterID(DataElement.NOISE);
             return false;
         }
         else {
-	        for (Integer i : seeds) {
-	        	this.data.get(i).setClusterID(currentClusterId);
-	        	this.addElementToCluster( currentClusterId, this.data.get(i) );
+	        for (DataElement i : seeds) {
+	        	i.setCluster(currentCluster);
+	        	this.addElementToCluster( currentCluster, i );
 	        }
-	        seeds.remove((Integer)idElement);
+	        seeds.remove( (DataElement) e );
 	        while (!seeds.isEmpty()) {
-	            int currentPoint = seeds.getFirst();
-	            Collection<Integer> result = this.getNeighbours( currentPoint );
+	        	DataElement currentElement = seeds.getFirst();
+	            Collection<DataElement> result = this.getNeighbours( currentElement );
 	    
 	            if (result.size() >= this.minNbPoints){
-                    for (Integer resultPId : result) {
+                    for (DataElement resultPId : result) {
                     	
-                        DataElement resultP = this.data.get(resultPId);
+                        DataElement resultP = resultPId;
                         
-                        if (resultP.getClusterID() == DataElement.UNCLASSIFIED) {
+                        
+                        if (resultP.getCluster() == null ) {
 	                        seeds.addLast(resultPId);
-	                        resultP.setClusterID(currentClusterId);
+	                        resultP.setCluster(currentCluster);
 	                        
 	                        // T
-	        	        	this.addElementToCluster( currentClusterId, (resultP) );
+	        	        	this.addElementToCluster( currentCluster, (resultP) );
 
                         }
                         
-                        if (resultP.getClusterID() == DataElement.NOISE) {
-                            resultP.setClusterID(currentClusterId);
+                        if ( resultP.getCluster() != null && resultP.isNoise() ) {
+                            resultP.setCluster(currentCluster);
                             
                             // T
-            	        	this.addElementToCluster( currentClusterId, (resultP) );
+            	        	this.addElementToCluster( currentCluster, (resultP) );
 
                         }
                         
                     }
 	            }
 	            
-	            seeds.remove((Integer)currentPoint);
+	            seeds.remove( (DataElement) currentElement );
 	        }
 	        return true;
         }
@@ -122,14 +140,14 @@ public class CL_DBSCAN<T> extends CL_algo<T> {
      * @param id
      * @return list of ids that are in the epsilon neighborhood
      */
-    private Collection<Integer> getNeighbours( int idElement ) {
+    private Collection<DataElement> getNeighbours( DataElement e ) {
     	
-		SortedMap<Double,Integer> neigbourList = this.data.getDistanceMap().get( idElement );
-	    List<Integer> result = new LinkedList<Integer>();
+		SortedMap<Double,DataElement> neigbourList = this.data.getDistanceMap( this.mode ).get( e );
+	    List<DataElement> result = new LinkedList<DataElement>();
 	    
 	    // Because the api returns strictly smaller we add  a small value. 
-	    Collection<Integer> closepoints = neigbourList.headMap( (double)this.epsilon + 0.0000000000000001f).values();
-	    for (Integer col : closepoints) {
+	    Collection<DataElement> closeElements = neigbourList.headMap( (double)this.epsilon + 0.0000000000000001f).values();
+	    for (DataElement col : closeElements) {
 	    	result.add(col);
 	    }
 	    

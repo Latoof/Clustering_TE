@@ -4,9 +4,11 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import Algorithms.DistanceCalculator;
 import Algorithms.EuclideanDistanceCalculator;
+import Algorithms.MeterDistanceCalculator;
 import GMOL.GMOL_Image;
 
 /***
@@ -18,51 +20,50 @@ import GMOL.GMOL_Image;
  * dimensions parmis la Date, le Lieu et les Tags.
  * 
  */
-public class DataSet implements Iterable<Entry<Integer,DataElement>> {
+public class DataSet implements Iterable<DataElement> {
 
-	
 	
 	public static int DS_TIME = 1;
 	public static int DS_LOC = 2;
 	public static int DS_KEYWORDS = 4;
 
 	
-	private TreeMap<Integer, DataElement> data;
+	private TreeSet<DataElement> data;
 	private int dimension;
 	
 	/* To make settable */
-	private DistanceCalculator distance_calculator;
+	// From time
+	private final DistanceCalculator euclidean_distance_calculator = new EuclideanDistanceCalculator();
 	
+	// From location
+	private final DistanceCalculator meter_distance_calculator = new MeterDistanceCalculator();
+
 	//private double[][] distance_matrix;
-	private TreeMap<Integer,SortedMap<Double,Integer>> distance_map;
+	private TreeMap<DataElement,SortedMap<Double,DataElement>> distance_map;
 	
 	public DataSet( int d ) {
 		
 		this.dimension = d;
-		this.data = new TreeMap<Integer,DataElement>();
-		
-		this.distance_calculator = new EuclideanDistanceCalculator();
-		
+		this.data = new TreeSet<DataElement>();
+				
 	}
 	
 	public DataSet( int d, DistanceCalculator calc ) {
 		
 		this.dimension = d;
-		this.data = new TreeMap<Integer,DataElement>();
-		
-		this.distance_calculator = calc;
-		
+		this.data = new TreeSet<DataElement>();
+				
 	}
 	
-	public DataSet( int d, TreeMap<Integer, DataElement> set ) {
+	public DataSet( int d, TreeSet<DataElement> set ) {
 		this.dimension = d;
 		this.data = set;
 	}
 	
 	public void reset_tmp() {
 		this.distance_map = null;
-		for ( Iterator<Entry<Integer, DataElement>> iterD = this.iterator(); iterD.hasNext(); ) {
-			iterD.next().getValue().setClusterID( DataElement.UNCLASSIFIED );
+		for ( Iterator<DataElement> iterD = this.iterator(); iterD.hasNext(); ) {
+			iterD.next().setClusterID( DataElement.UNCLASSIFIED );
 		}
 	}
 	
@@ -72,21 +73,28 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 			throw new NumberFormatException();
 		}
 		else {
-			data.put( e.getID(), e );
+			data.add( e );
 		}
 		
 	}
 	
+	/*
 	public DataElement get( int id) {
-		return this.data.get( id );
+		//return this.data.get( id );
+		return new DataElement();
 	}
-
-	public Iterator<Entry<Integer,DataElement>> iterator() {
-		return this.data.entrySet().iterator();
+	*/
+	
+	public Iterator<DataElement> iterator() {
+		return this.data.iterator();
 	}
 	
 	public int count() {
 		return this.data.size();
+	}
+	
+	public int getDimension() {
+		return this.dimension;
 	}
 	
 	
@@ -117,8 +125,8 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 				tab[offset++] = (double) imgs[i].getDate().getTime() / 60000;
 			}
 			if ( (mode & DS_LOC) == DS_LOC  ) {
-				tab[offset++] = (double)imgs[i].getLocation().getX()*1.3;
-				tab[offset++] = (double)imgs[i].getLocation().getY()*1.3;
+				tab[offset++] = (double)imgs[i].getLocation().getX();
+				tab[offset++] = (double)imgs[i].getLocation().getY();
 
 			}
 			if ( mode == DS_KEYWORDS ) {
@@ -200,10 +208,10 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
     }
     */
 	
-	public TreeMap<Integer,SortedMap<Double,Integer>> getDistanceMap() {
+	public TreeMap<DataElement,SortedMap<Double,DataElement>> getDistanceMap( int mode ) {
 		
 		if ( this.distance_map == null ) {
-			this.createDistanceMap();
+			this.createDistanceMap( mode );
 		}
 		
 		return this.distance_map;
@@ -212,26 +220,30 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
 	
 
     /* Pour chaque donne, on calcule les distances par rapport aux autres */
-    private void createDistanceMap() {
+    private void createDistanceMap( int mode ) {
     	
-    	this.distance_map = new TreeMap<Integer, SortedMap<Double,Integer>>();
+    	this.distance_map = new TreeMap<DataElement, SortedMap<Double,DataElement>>();
     	
-        double distance;
-        Iterator<Entry<Integer, DataElement>> itFrom = this.iterator();
+        double distance = -1;
+        Iterator<DataElement> itFrom = this.iterator();
         
         while ( itFrom.hasNext() ) {
         	
-        	Entry<Integer, DataElement> eFrom = itFrom.next();
+        	DataElement eFrom = itFrom.next();
 
-        	this.distance_map.put( eFrom.getKey() , new TreeMap<Double, Integer>() );
+        	this.distance_map.put( eFrom , new TreeMap<Double, DataElement>() );
         	
-        	Iterator<Entry<Integer, DataElement>> itTo = this.iterator();
+        	Iterator<DataElement> itTo = this.iterator();
             while ( itTo.hasNext() ) {
 
-            	Entry<Integer, DataElement> eTo = itTo.next();
-            	
-                distance = this.distance_calculator.calculateDistance( eFrom.getValue(), eTo.getValue() );
-                this.distance_map.get( eFrom.getKey() ).put( distance, eTo.getKey() );
+            	DataElement eTo = itTo.next();
+        		if ( (mode & DS_TIME) == DS_TIME ) {
+                    distance = this.euclidean_distance_calculator.calculateDistance( eFrom, eTo );
+        		}
+        		if ( (mode & DS_LOC) == DS_LOC ) {
+                    distance = this.meter_distance_calculator.calculateDistance( eFrom, eTo );
+        		}
+                this.distance_map.get( eFrom ).put( distance, eTo );
                 //this.distance_map.putAll( new SortedMap<Double,Integer>() );
             }
         }
@@ -242,7 +254,7 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
     	
     	String str = "";
     	
-    	Iterator<DataElement> iterData = data.values().iterator();
+    	Iterator<DataElement> iterData = data.iterator();
     	while ( iterData.hasNext() ) {
     		str += iterData.next() + "\n";
     	}
@@ -252,9 +264,9 @@ public class DataSet implements Iterable<Entry<Integer,DataElement>> {
     
     public void print_cluster_ids() {
     	
-    	Iterator<DataElement> iterData = data.values().iterator();
+    	Iterator<DataElement> iterData = data.iterator();
     	while ( iterData.hasNext() ) {
-    		System.out.println( iterData.next().getClusterID() );
+    		System.out.println( iterData.next().getCluster().getID() );
     	}    	
     }
 

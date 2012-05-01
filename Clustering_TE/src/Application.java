@@ -24,11 +24,11 @@ public class Application {
 			
 		}
 		
-		DataSet dsTime = DataSet.ImagesToDataSet( images,  (DataSet.DS_LOC | DataSet.DS_TIME) );
+		DataSet dsTime = DataSet.ImagesToDataSet( images, DataSet.DS_TIME | DataSet.DS_LOC );
 		System.out.println("Count : "+dsTime.count());
 		System.out.println(dsTime);
 		
-		CL_DBSCAN<Integer> dbs = new CL_DBSCAN<Integer>( dsTime );
+		CL_DBSCAN<Integer> dbs = new CL_DBSCAN<Integer>( dsTime, DataSet.DS_TIME );
 		dbs.runAlgo();
 				
 		System.out.println("Done");
@@ -36,14 +36,15 @@ public class Application {
 		dsTime.print_cluster_ids();
 		
 		System.out.println( dbs.getClusters() );
-		Iterator<ClusterElement> iterClusters = dbs.getClusters().values().iterator();
+		Iterator<ClusterElement> iterClusters = dbs.getClusters().iterator();
 		while ( iterClusters.hasNext() ) {
 			ClusterElement c = iterClusters.next();
 			c.computeMeans();
 			System.out.println( c );
 		}
 		
-		DataSet dsSecondPass = DataSet.ClustersToDataSet( dbs.getClusters().values(), DataSet.DS_LOC );
+		//dbs.getClusters()).sort();
+		DataSet dsSecondPass = DataSet.ClustersToDataSet( dbs.getClusters(), DataSet.DS_LOC );
 		CL_DBSCAN<Integer> dbst = new CL_DBSCAN<Integer>( dsSecondPass );
 		dbst.runAlgo();
 		

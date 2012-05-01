@@ -1,4 +1,5 @@
 package Algorithms;
+import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -20,38 +21,54 @@ import DataModel.DataSet;
  * 
  */
 public abstract class CL_algo<T> {
-
+	
 	protected DataSet data;
-	protected TreeMap<Integer,ClusterElement> clusters;
+	protected TreeSet<ClusterElement> clusters;
 
 	public CL_algo( DataSet d ) {
 		this.data = d;
-		this.clusters = new TreeMap<Integer,ClusterElement>();
+		this.clusters = new TreeSet<ClusterElement>();
+	}
+	
+	public CL_algo( DataSet d, int mode ) {
+		this.data = d;
+		
+		this.clusters = new TreeSet<ClusterElement>( new DimComparator(mode) );
+		//this.clusters = new TreeSet<ClusterElement>();
+
+
 	}
 	
 	public abstract void runAlgo();
 	
-	public TreeMap<Integer,ClusterElement> getClusters() {
+	public TreeSet<ClusterElement> getClusters() {
 		return this.clusters;
 	}
 	
 	
-	public void addElementToCluster( int cluster_id, DataElement e ) {
+	public void addElementToCluster( ClusterElement c, DataElement e ) {
 		
+		c.addElement(e);
+		c.computeMeans();
+		if ( !this.clusters.contains(c) ) {
+			this.clusters.add(c);
+		}
 		// Lazy
-		this.newCluster(cluster_id, e.getDimension());
+		//this.newCluster(e.getDimension());
 		
-		this.clusters.get(cluster_id).addElement(e);
+		//this.clusters.
 		
 	}
 	
-	public void newCluster( int cluster_id, int dimension ) {
+	/*
+	public void newCluster( int dimension ) {
 		
 		if ( this.clusters.get(cluster_id) == null ) {
 			this.clusters.put( cluster_id, new ClusterElement(dimension) );
 		}
 		
 	}
+	*/
 	
     public static double EuclidianDistance (double[] vect1, double[] vect2) {
         if(vect1.length != vect2.length){

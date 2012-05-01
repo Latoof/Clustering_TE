@@ -67,6 +67,14 @@ public class ClusterElement extends DataElement {
 		return str;
 	}
 	
+	public void merge( ClusterElement c ) {
+		
+		Iterator<DataElement> iterCluster = c.getSons().iterator();
+		while ( iterCluster.hasNext() ) {
+			this.addElement( iterCluster.next() );
+		}
+		
+	}
 	
 	
 }
